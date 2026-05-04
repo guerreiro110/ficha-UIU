@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UIU // ARQUIVO RESTRITO — THE LAW</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Special+Elite&display=swap');
+
+  :root {
+    --paper: #0a0c0f;
+    --ink: #c8c9c7;
+    --ink-dim: #6b7280;
+    --ink-faint: #2a2d32;
+    --red: #8b1a1a;
+    --red-bright: #c0392b;
+    --gold: #8a7340;
+    --gold-bright: #b8962e;
+    --stamp-red: rgba(180, 30, 30, 0.85);
+    --line: #1e2228;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #050608;
+    font-family: 'Courier Prime', 'Courier New', monospace;
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 16px 80px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.08) 2px,
+        rgba(0,0,0,0.08) 4px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .noise {
+    position: fixed;
+    inset: 0;
+    opacity: 0.03;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 860px;
+    background: #0d0f13;
+    border: 1px solid var(--line);
+    box-shadow:
+      0 0 0 1px #1a1d22,
+      0 0 60px rgba(0,0,0,0.8),
+      inset 0 0 80px rgba(0,0,0,0.3);
+  }
+
+  /* ── HEADER ── */
+  .doc-header {
+    border-bottom: 2px solid var(--red);
+    padding: 28px 36px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 20px;
+    position: relative;
+  }
+
+  .doc-header::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0; right: 0;
+    height: 1px;
+    background: var(--ink-faint);
+  }
+
+  .uiu-logo {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .uiu-logo .seal {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+  }
+
+  .uiu-logo .org {
+    font-family: 'Special Elite', serif;
+    font-size: 13px;
+    color: var(--ink);
+    letter-spacing: 1px;
+    line-height: 1.4;
+  }
+
+  .uiu-logo .division {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin-top: 4px;
+  }
+
+  .doc-id-block {
+    text-align: right;
+  }
+
+  .doc-id-block .doc-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-dim);
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+
+  .doc-id-block .clearance {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--red-bright);
+    letter-spacing: 3px;
+    border: 1px solid var(--red);
+    padding: 3px 8px;
+    display: inline-block;
+  }
+
+  /* ── CLASSIFICATION BANNER ── */
+  .classification-banner {
+    background: var(--red);
+    padding: 8px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    border-bottom: 1px solid #6b1010;
+  }
+
+  .classification-banner span {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 4px;
+    color: #fff;
+    text-transform: uppercase;
+  }
+
+  .classification-banner .dot {
+    width: 4px; height: 4px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+  }
+
+  /* ── STAMP ── */
+  .stamp-wrapper {
+    position: relative;
+    padding: 32px 36px 0;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .stamp {
+    position: absolute;
+    top: 20px;
+    right: 36px;
+    border: 3px solid var(--stamp-red);
+    color: var(--stamp-red);
+    font-family: 'Special Elite', serif;
+    font-size: 22px;
+    letter-spacing: 4px;
+    padding: 6px 14px;
+    transform: rotate(-8deg);
+    opacity: 0.75;
+    text-transform: uppercase;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  /* ── SUBJECT BLOCK ── */
+  .subject-block {
+    padding: 32px 36px 0;
+  }
+
+  .subject-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .subject-name {
+    font-family: 'Special Elite', serif;
+    font-size: 28px;
+    color: #e8e6e0;
+    letter-spacing: 3px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .subject-alias {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--gold-bright);
+    letter-spacing: 2px;
+    margin-bottom: 20px;
+  }
+
+  .meta-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0;
+    border: 1px solid var(--ink-faint);
+    margin-bottom: 0;
+  }
+
+  .meta-cell {
+    padding: 8px 12px;
+    border-right: 1px solid var(--ink-faint);
+    border-bottom: 1px solid var(--ink-faint);
+  }
+
+  .meta-cell:nth-child(even) { border-right: none; }
+
+  .meta-key {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 2px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    margin-bottom: 3px;
+  }
+
+  .meta-val {
+    font-size: 12px;
+    color: var(--ink);
+  }
+
+  .meta-val.redacted {
+    background: var(--ink);
+    color: var(--ink);
+    user-select: none;
+    padding: 0 4px;
+  }
+
+  /* ── DIVIDER ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 28px 36px 0;
+  }
+
+  .section-divider .line {
+    flex: 1;
+    height: 1px;
+    background: var(--ink-faint);
+  }
+
+  .section-divider .label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  /* ── BODY TEXT ── */
+  .doc-body {
+    padding: 20px 36px;
+  }
+
+  .doc-body p {
+    font-size: 13px;
+    line-height: 1.9;
+    color: #b0b3ae;
+    margin-bottom: 16px;
+    text-align: justify;
+  }
+
+  .doc-body p .highlight {
+    color: #d4d0c8;
+    font-weight: 700;
+  }
+
+  .doc-body p .redacted-inline {
+    background: #c8c9c7;
+    color: #c8c9c7;
+    padding: 0 6px;
+    user-select: none;
+    font-size: 11px;
+  }
+
+  /* ── INCIDENT BOX ── */
+  .incident-box {
+    margin: 20px 36px;
+    border-left: 3px solid var(--red);
+    background: rgba(139, 26, 26, 0.06);
+    padding: 16px 20px;
+  }
+
+  .incident-box .inc-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--red-bright);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .incident-box p {
+    font-size: 12px;
+    line-height: 1.85;
+    color: #9a9d98;
+    margin-bottom: 10px;
+    text-align: justify;
+  }
+
+  .incident-box p:last-child { margin-bottom: 0; }
+
+  /* ── ABILITY TABLE ── */
+  .ability-section {
+    padding: 0 36px 8px;
+  }
+
+  .ability-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .ability-table th {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 8px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    text-align: left;
+    padding: 8px 12px;
+    background: rgba(138, 115, 64, 0.08);
+    border: 1px solid var(--ink-faint);
+  }
+
+  .ability-table td {
+    padding: 12px;
+    border: 1px solid var(--ink-faint);
+    vertical-align: top;
+    color: #a0a39e;
+    line-height: 1.7;
+  }
+
+  .ability-table td.ability-name {
+    color: var(--ink);
+    font-weight: 700;
+    width: 160px;
+    white-space: nowrap;
+  }
+
+  .ability-table tr:hover td {
+    background: rgba(255,255,255,0.015);
+  }
+
+  /* ── PSYCH EVAL ── */
+  .eval-box {
+    margin: 8px 36px 0;
+    border: 1px solid var(--ink-faint);
+    padding: 16px 20px;
+    background: rgba(255,255,255,0.01);
+  }
+
+  .eval-box .eval-header {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--ink-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--ink-faint);
+  }
+
+  .eval-box p {
+    font-size: 12px;
+    line-height: 1.85;
+    color: #8a8d88;
+    font-style: italic;
+    text-align: justify;
+  }
+
+  /* ── FOOTER ── */
+  .doc-footer {
+    margin-top: 36px;
+    border-top: 1px solid var(--ink-faint);
+    padding: 16px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .doc-footer .footer-left {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: var(--ink-dim);
+    line-height: 1.8;
+  }
+
+  .doc-footer .footer-right {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--red);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  .final-banner {
+    background: var(--red);
+    padding: 7px 36px;
+    text-align: center;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: #fff;
+  }
+
+  /* ── BLINK ── */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .cursor {
+    display: inline-block;
+    width: 8px; height: 13px;
+    background: var(--gold);
+    vertical-align: middle;
+    animation: blink 1.1s step-end infinite;
+    margin-left: 3px;
+  }
+
+  /* ── QUOTE ── */
+  .field-quote {
+    margin: 8px 36px 0;
+    padding: 14px 20px;
+    border-left: 2px solid var(--gold);
+    background: rgba(138,115,64,0.05);
+  }
+
+  .field-quote p {
+    font-family: 'Special Elite', serif;
+    font-size: 14px;
+    color: #c0bc9a;
+    line-height: 1.7;
+    font-style: italic;
+  }
+
+  .field-quote .attr {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    color: var(--ink-dim);
+    letter-spacing: 2px;
+    margin-top: 8px;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 600px) {
+    .doc-header { flex-direction: column; padding: 20px; }
+    .doc-id-block { text-align: left; }
+    .subject-block, .doc-body, .incident-box, .ability-section,
+    .eval-box, .doc-footer, .field-quote, .section-divider { padding-left: 20px; padding-right: 20px; }
+    .stamp-wrapper { padding: 20px 20px 0; }
+    .stamp { right: 20px; font-size: 16px; }
+    .meta-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="noise"></div>
+
+<div class="page">
+
+  <!-- CLASSIFICATION TOP -->
+  <div class="classification-banner">
+    <span>Confidencial</span>
+    <div class="dot"></div>
+    <span>Acesso Nível 4</span>
+    <div class="dot"></div>
+    <span>Uso Interno UIU</span>
+  </div>
+
+  <!-- HEADER -->
+  <div class="doc-header">
+    <div class="uiu-logo">
+      <span class="seal">Departamento de Justiça dos E.U.A.</span>
+      <span class="org">Federal Bureau of Investigation<br>Unidade de Incidentes Incomuns</span>
+      <span class="division">// Divisão de Contenção e Campo</span>
+    </div>
+    <div class="doc-id-block">
+      <div class="doc-num">ARQUIVO Nº UIU-PERS-0047-ALFA</div>
+      <div class="doc-num">EMITIDO: <span class="redacted-inline" style="background:#2a2d32;color:#2a2d32;padding:0 30px">██/██/████</span></div>
+      <div class="doc-num" style="margin-top:8px">REVISÃO: 7ª</div>
+      <div class="clearance" style="margin-top:10px">RESTRITO — NÍVEL 4</div>
+    </div>
+  </div>
+
+  <!-- STAMP -->
+  <div class="stamp-wrapper">
+    <div class="stamp">RESTRITO</div>
+  </div>
+
+  <!-- SUBJECT -->
+  <div class="subject-block">
+    <div class="subject-label">// Arquivo de Pessoal — Sujeito</div>
+    <div class="subject-name">FELIPE DE OLIVEIRA</div>
+    <div class="subject-alias">Codinome operacional: "THE LAW" <span class="cursor"></span></div>
+
+    <div class="meta-grid">
+      <div class="meta-cell">
+        <div class="meta-key">Idade</div>
+        <div class="meta-val">36</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Sexo</div>
+        <div class="meta-val">Masculino</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Etnia</div>
+        <div class="meta-val">Hispânico</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Nacionalidade</div>
+        <div class="meta-val">Estadunidense</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Espécie</div>
+        <div class="meta-val">Humano [verificado]</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Sexualidade</div>
+        <div class="meta-val">Heterossexual</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Data de nasc.</div>
+        <div class="meta-val"><span class="redacted-inline">arquivo não encontrado</span></div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Local de nasc.</div>
+        <div class="meta-val"><span class="redacted-inline">arquivo não encontrado</span></div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Altura</div>
+        <div class="meta-val">1,80 m</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Cabelo</div>
+        <div class="meta-val">Preto</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Olhos</div>
+        <div class="meta-val">Desconhecido — uso permanente de máscara</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Pele</div>
+        <div class="meta-val">Branca</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Departamento</div>
+        <div class="meta-val">Liderança da UIU</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Local alocado</div>
+        <div class="meta-val">Site 19</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Status</div>
+        <div class="meta-val" style="color:#5a9a5a">ATIVO</div>
+      </div>
+      <div class="meta-cell">
+        <div class="meta-key">Classificação anômala</div>
+        <div class="meta-val" style="color:#c0952b">LATENTE — MONITORADO</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION: HISTÓRICO -->
+  <div class="section-divider">
+    <div class="line"></div>
+    <div class="label">// Histórico de Recrutamento</div>
+    <div class="line"></div>
+  </div>
+
+  <div class="doc-body">
+    <p>
+      Os registros anteriores ao ingresso de Felipe de Oliveira na UIU encontram-se <span class="redacted-inline">██████████████████████████████</span> por ordem direta da supervisão de nível 5. O que os arquivos disponíveis permitem reconstituir é fragmentário — e, por isso mesmo, perturbador.
+    </p>
+    <p>
+      Oliveira chegou à atenção da UIU da mesma maneira que a maioria dos recrutados não-convencionais: por persistência. Durante sua atuação como oficial de polícia em <span class="redacted-inline">████████</span>, ele produziu, em um período de dezoito meses, <span class="highlight">quatorze relatórios detalhando eventos classificáveis como anomalias de grau leve a moderado</span>. Cada relatório foi arquivado pelos superiores como "distúrbio civil", "intoxicação de testemunhas" ou "erro de avaliação do agente". Nenhum foi formalmente investigado.
+    </p>
+    <p>
+      Oliveira continuou arquivando. Mesmo depois de ser informado, com crescente pressão institucional, de que os relatórios prejudicavam sua carreira. Mesmo depois de ser transferido duas vezes. Mesmo depois que sua parceira pediu remoção de dupla alegando que trabalhar com ele se tornara "psicologicamente desgastante."
+    </p>
+    <p>
+      O décimo quinto relatório descrevia em detalhe técnico preciso um indivíduo que, após ser abatido por quatro disparos à queima-roupa, levantou-se, agradeceu aos oficiais presentes e caminhou pela parede do corredor do hospital. Oliveira incluiu no relatório fotografias, medições do ambiente e uma hipótese operacional sobre contenção temporária do sujeito.
+    </p>
+    <p>
+      Esse relatório nunca chegou ao arquivo convencional do departamento. Foi interceptado por um agente da UIU em trânsito na cidade. Três dias depois, uma mulher que não forneceu nome sentou-se à mesa de Oliveira, colocou diante dele uma pasta com a logo do FBI e disse apenas: <em>"Você tem visto coisas que não deveria."</em>
+    </p>
+    <p>
+      Oliveira respondeu: <em>"Não. Tenho visto coisas que todos fingem não ver."</em>
+    </p>
+    <p>
+      Ele foi transferido para a UIU na semana seguinte. Nenhuma cerimônia. Nenhuma orientação formal. Apenas um crachá provisório, acesso nível 1 e uma pilha de dossiês sobre casos que a divisão havia encerrado por falta de pessoal suficiente para investigar.
+    </p>
+    <p>
+      Ele os leu em 72 horas e entregou uma análise cruzada de 40 páginas ligando três casos supostamente não-relacionados a uma única origem anômala. A análise estava correta.
+    </p>
+  </div>
+
+  <!-- INCIDENT BOX -->
+  <div class="incident-box">
+    <div class="inc-label">// Nota de Arquivo — Incidente Formativo</div>
+    <p>
+      Durante sua terceira missão de campo — contenção de uma entidade de classe Euclid com capacidade documentada de indução de colapso psicológico via contato auditivo — Oliveira foi exposto ao campo de influência do sujeito por um período de <span class="redacted-inline">██</span> minutos. O protocolo padrão define exposição acima de 8 minutos como causa de evacuação imediata e avaliação psiquiátrica obrigatória.
+    </p>
+    <p>
+      Quando a equipe de resgate entrou no perímetro, encontrou Oliveira de pé, de costas para a entidade, preenchendo à mão um formulário de relatório de campo. Ele havia contido o sujeito utilizando apenas equipamento padrão de contenção e improvisado dois pontos de ancoragem com materiais do ambiente.
+    </p>
+    <p>
+      Na avaliação psicológica subsequente, quando perguntado sobre o que havia sentido durante a exposição, Oliveira respondeu: <em>"Ela tentava me convencer de que eu queria desistir. Mas eu já sei o que quero. Ela não sabia. Essa era a vantagem."</em> A avaliadora registrou no laudo: <em>"Resistência cognitiva atípica. Investigação adicional recomendada."</em> A investigação foi aberta. Seus resultados estão classificados em nível 4.
+    </p>
+  </div>
+
+  <!-- SECTION: ASCENSÃO -->1
+  <div class="section-divider">
+    <div class="line"></div>
+    <div class="label">// Trajetória Operacional e Ascensão</div>
+    <div class="line"></div>
+  </div>
+
+  <div class="doc-body">
+    <p>
+      O codinome <span class="highlight">"The Law"</span> não foi designado pela UIU. Emergiu espontaneamente entre agentes de campo após uma operação de alto risco em <span class="redacted-inline">████████, ████</span>, na qual Oliveira — então Agente Sênior de Campo — encerrou uma negociação com um grupo de interesse armado ao citar de memória, com precisão legal, treze artigos do código federal enquanto simultaneamente neutralizava dois combatentes sem uso de arma letal. Um agente presente registrou informalmente em comunicação interna: <em>"Aquele homem não representa a lei. Ele é a lei."</em> A designação foi adotada pela divisão antes que qualquer supervisor tomasse conhecimento.
+    </p>
+    <p>
+      A ascensão à liderança da UIU não ocorreu por eleição interna nem por indicação política. Ocorreu porque, ao longo de <span class="redacted-inline">██</span> anos de serviço, Oliveira havia acumulado um histórico de missões bem-sucedidas em condições que resultaram em baixas de outros agentes, recusas de equipes experientes e, em dois casos documentados, pânico coletivo generaliza
